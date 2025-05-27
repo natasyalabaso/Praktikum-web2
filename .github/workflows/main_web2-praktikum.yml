@@ -22,6 +22,16 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install npm dependencies and build frontend
+        run: 
+          npm install
+          npm run build
 
       - name: Check if composer.json exists
         id: check_files
@@ -34,7 +44,7 @@ jobs:
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip -r release.zip . -x "node_modules/*" ".git/*"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -64,15 +74,15 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_800A3503BA434599ADE1CD1E7B05D797 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A9955FA877124332A6CBD2999B7A2E70 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7B2599CEEF194635B2BD4C87F3CBFED8 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_D6F99E08505B469A88C71D695EAFB237 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DD6D900CAD09476DA73051F1BAFF4906 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7593878269344F658CBB575E0363457A }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'web2-praktikum'
+          app-name: 'octavia-f55123015-praktikum-web2'
           slot-name: 'Production'
           package: .
           
